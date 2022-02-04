@@ -1,7 +1,13 @@
+//import 'dart:html';
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_search_bar/flutter_search_bar.dart';
+import 'package:html/dom.dart' as dom;
+import 'package:html/dom_parsing.dart';
+import 'package:html/parser.dart';
+import 'package:http/http.dart' as http;
 
 class SearchPage extends StatelessWidget{
   const SearchPage({Key? key}) : super(key: key);
@@ -26,6 +32,8 @@ class Bar extends StatefulWidget {
 
 class _SearchState extends State<Bar>{
   late SearchBar searchBar;
+  late http.Response response;
+  late List<dynamic> movs = [];
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
@@ -34,21 +42,45 @@ class _SearchState extends State<Bar>{
     );
   }
 
+  Future<dom.Document> getDOM(String value) async{
+    var response = await http.Client().get(Uri.parse("http://seasonvar.ru/search?q=$value"));
+
+    var document = parse(response.body);
+    return document;
+  }
+
+  void getMovies(String value) async{
+    var document = await getDOM(value);
+    var containers = document.getElementsByClassName("pgs-search-info");
+    var list = [];
+
+    for (var element in containers) {
+      list.add(element.text);
+    }
+
+    movs = list;
+  }
+  
   _SearchState() {
     searchBar = SearchBar(
         inBar: false,
         setState: setState,
-        onSubmitted: print,
-        buildDefaultAppBar: buildAppBar
+        onSubmitted: getMovies,
+        buildDefaultAppBar: buildAppBar,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     //return searchBar.build(context);
-    return Scaffold(body: ListView(
-        scrollDirection: Axis.vertical,
-        children: const [MovieCard(), MovieCard(), MovieCard()]),
+    return Scaffold(body: ListView.builder(
+      scrollDirection: Axis.vertical,
+        padding: const EdgeInsets.all(8),
+        itemCount: movs.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Text(movs[index], style: TextStyle(fontSize: 22));
+        }
+    ),
       appBar: searchBar.build(context),);
   }
 }
