@@ -8,16 +8,17 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/dom_parsing.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-class SearchPage extends StatelessWidget{
+class SearchPage extends StatelessWidget {
   const SearchPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
         home: Scaffold(
-      body: Bar(),
-    ));
+          body: Bar(),
+        ));
   }
 }
 
@@ -30,68 +31,111 @@ class Bar extends StatefulWidget {
   }
 }
 
-class _SearchState extends State<Bar>{
+class _SearchState extends State<Bar> {
   late SearchBar searchBar;
   late http.Response response;
-  late List<dynamic> movs = [];
+  late List<MovieCard> cards = [];
+  var loading = false;
+  var title = '';
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
-        title: const Text('My Home Page'),
+      backgroundColor: Colors.redAccent,
+        title: Text('Поиск' + (title.isNotEmpty ? ': $title' : '')),
         actions: [searchBar.getSearchAction(context)]
     );
   }
 
-  Future<dom.Document> getDOM(String value) async{
-    var response = await http.Client().get(Uri.parse("http://seasonvar.ru/search?q=$value"));
+  Future<dom.Document> getDOM(String value) async {
+    setState(() {});
+    var response = await http.Client().get(
+        Uri.parse("http://seasonvar.ru/search?q=$value"));
 
     var document = parse(response.body);
     return document;
   }
 
-  void getMovies(String value) async{
+  void getMovies(String value) async {
+    loading = true;
+    title = value;
     var document = await getDOM(value);
-    var containers = document.getElementsByClassName("pgs-search-info");
-    var list = [];
+    var containers = document.getElementsByClassName("pgs-search-wrap");
+    List<MovieCard> list = [];
 
     for (var element in containers) {
-      list.add(element.text);
+      //list.add(element.text);
+      list.add(MovieCard(image: element
+          .getElementsByTagName("img")
+          .first
+          .attributes["src"].toString(), title: element
+          .getElementsByClassName("pgs-search-info")
+          .first
+          .getElementsByTagName("a")
+          .first
+          .text, subtitle: element
+          .getElementsByTagName("p")
+          .first
+          .text, film: element
+          .getElementsByTagName("a")
+          .first
+          .attributes["href"].toString()));
     }
-
-    movs = list;
+    cards = list;
+    loading = false;
+    setState(() {});
   }
-  
+
   _SearchState() {
     searchBar = SearchBar(
-        inBar: false,
-        setState: setState,
-        onSubmitted: getMovies,
-        buildDefaultAppBar: buildAppBar,
+      inBar: false,
+      setState: setState,
+      onSubmitted: getMovies,
+      buildDefaultAppBar: buildAppBar,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     //return searchBar.build(context);
-    return Scaffold(body: ListView.builder(
-      scrollDirection: Axis.vertical,
-        padding: const EdgeInsets.all(8),
-        itemCount: movs.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Text(movs[index], style: TextStyle(fontSize: 22));
-        }
-    ),
-      appBar: searchBar.build(context),);
+    return Scaffold(
+      body: (loading
+          ? SpinKitFadingCube(
+              itemBuilder: (BuildContext context, int index) {
+                return const DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.lightGreen,
+                  ),
+                );
+              },
+            )
+          : (cards.isNotEmpty
+              ? ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  padding: const EdgeInsets.all(8),
+                  itemCount: cards.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return cards[index];
+                  })
+              : const Text('Ничего не найдено'))),
+      appBar: searchBar.build(context),
+    );
   }
 }
 
 class MovieCard extends StatelessWidget {
-  const MovieCard({Key? key}) : super(key: key);
+  final String image;
+  final String title;
+  final String subtitle;
+  final String film;
+
+  const MovieCard(
+      {Key? key, required this.image, required this.title, required this.subtitle, required this.film})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      child:Container(
+      child: Container(
         height: 150,
         color: Colors.white,
         child: Row(
@@ -100,21 +144,21 @@ class MovieCard extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Expanded(
-                  child:Image.asset("assets/images/marci.jpg"),
-                  flex:2 ,
+                  child: Image.network(image),
+                  flex: 2,
                 ),
               ),
             ),
             Expanded(
-              child:Container(
+              child: Container(
                 alignment: Alignment.topLeft,
                 child: Column(
                   children: [
-                    const Expanded(
+                    Expanded(
                       flex: 5,
                       child: ListTile(
-                        title: Text("Сериал Невский 5 сезон онлайн"),
-                        subtitle: Text("В жизни майора Павла Семёнова почти ничего не изменилось. Он продолжает трудиться в полиции в качестве начальника. Под его ответственностью весь Центральный район. Полковник Андрей Михайлов, по инициативе начальства, оказывается в округе, знаменитом своими криминальными активами. Этот перевод может изменить его карьеру и жизнь навсегда, ведь у мужчины есть лишь опыт работы в Невском отделе. В новом районе же всё работает по известным правилам улиц - кто сильнее, за тем и правда. Тем временем над Семёновым сгущаются тучи. Им всерьез заинтересовалось ФСБ, в котором считают, что мужчина и есть знаменитый Архитектор, преступник, которого не могут поймать уже несколько лет. Михайлов рад бы помочь приятелю, но не верит ему.", maxLines: 4,),
+                        title: Text(title),
+                        subtitle: Text(subtitle, maxLines: 4,),
                       ),
                     ),
                     Expanded(
@@ -127,7 +171,7 @@ class MovieCard extends StatelessWidget {
                             style: TextButton.styleFrom(
                                 primary: Colors.lightGreen
                             ),
-                            onPressed: (){},
+                            onPressed: () {},
                           ),
                           const SizedBox(width: 8,)
                         ],
@@ -136,7 +180,7 @@ class MovieCard extends StatelessWidget {
                   ],
                 ),
               ),
-              flex:8 ,
+              flex: 8,
             ),
           ],
         ),
