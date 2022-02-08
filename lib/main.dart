@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:shower/movie.dart';
 import 'search.dart';
 
 void main() {
@@ -100,7 +101,7 @@ class ImageButton extends StatelessWidget {
       iconSize: size,
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return const SearchPage();
+          return MoviePage();
         }));
       },
     );
