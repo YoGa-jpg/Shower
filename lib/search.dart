@@ -17,8 +17,9 @@ class SearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
         home: Scaffold(
-          body: Bar(),
-        ));
+          backgroundColor: Colors.black,
+      body: Bar(),
+    ));
   }
 }
 
@@ -40,16 +41,15 @@ class _SearchState extends State<Bar> {
 
   AppBar buildAppBar(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.redAccent,
+        backgroundColor: Colors.white10,
         title: Text('Поиск' + (title.isNotEmpty ? ': $title' : '')),
-        actions: [searchBar.getSearchAction(context)]
-    );
+        actions: [searchBar.getSearchAction(context)]);
   }
 
   Future<dom.Document> getDOM(String value) async {
     setState(() {});
-    var response = await http.Client().get(
-        Uri.parse("http://seasonvar.ru/search?q=$value"));
+    var response = await http.Client()
+        .get(Uri.parse("http://seasonvar.ru/search?q=$value"));
 
     var document = parse(response.body);
     return document;
@@ -64,21 +64,24 @@ class _SearchState extends State<Bar> {
 
     for (var element in containers) {
       //list.add(element.text);
-      list.add(MovieCard(image: element
-          .getElementsByTagName("img")
-          .first
-          .attributes["src"].toString(), title: element
-          .getElementsByClassName("pgs-search-info")
-          .first
-          .getElementsByTagName("a")
-          .first
-          .text, subtitle: element
-          .getElementsByTagName("p")
-          .first
-          .text, film: element
-          .getElementsByTagName("a")
-          .first
-          .attributes["href"].toString()));
+      list.add(MovieCard(
+          image: element
+              .getElementsByTagName("img")
+              .first
+              .attributes["src"]
+              .toString(),
+          title: element
+              .getElementsByClassName("pgs-search-info")
+              .first
+              .getElementsByTagName("a")
+              .first
+              .text,
+          subtitle: element.getElementsByTagName("p").first.text,
+          film: element
+              .getElementsByTagName("a")
+              .first
+              .attributes["href"]
+              .toString()));
     }
     cards = list;
     loading = false;
@@ -98,12 +101,13 @@ class _SearchState extends State<Bar> {
   Widget build(BuildContext context) {
     //return searchBar.build(context);
     return Scaffold(
+      backgroundColor: Colors.black,
       body: (loading
           ? SpinKitFadingCube(
               itemBuilder: (BuildContext context, int index) {
                 return const DecoratedBox(
                   decoration: BoxDecoration(
-                    color: Colors.lightGreen,
+                    color: Colors.white,
                   ),
                 );
               },
@@ -116,7 +120,15 @@ class _SearchState extends State<Bar> {
                   itemBuilder: (BuildContext context, int index) {
                     return cards[index];
                   })
-              : const Text('Ничего не найдено'))),
+              : const Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    'Ничего не найдено',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700),
+                  )))),
       appBar: searchBar.build(context),
     );
   }
@@ -129,22 +141,27 @@ class MovieCard extends StatelessWidget {
   final String film;
 
   const MovieCard(
-      {Key? key, required this.image, required this.title, required this.subtitle, required this.film})
+      {Key? key,
+      required this.image,
+      required this.title,
+      required this.subtitle,
+      required this.film})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white10,
       child: Container(
         height: 150,
-        color: Colors.white,
+        color: Colors.white10,
         child: Row(
           children: [
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(10),
                 child: Expanded(
-                  child: Image.network(image),
+                  child: ClipRRect(borderRadius: BorderRadius.circular(10), child: Image.network(image)),
                   flex: 2,
                 ),
               ),
@@ -157,8 +174,12 @@ class MovieCard extends StatelessWidget {
                     Expanded(
                       flex: 5,
                       child: ListTile(
-                        title: Text(title),
-                        subtitle: Text(subtitle, maxLines: 4,),
+                        title: Text(title, style: TextStyle(color: Colors.white)),
+                        subtitle: Text(
+                          subtitle,
+                          maxLines: 4,
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                     Expanded(
@@ -169,11 +190,12 @@ class MovieCard extends StatelessWidget {
                           TextButton(
                             child: const Text("СМОТРЕТЬ"),
                             style: TextButton.styleFrom(
-                                primary: Colors.lightGreen
-                            ),
+                                primary: Colors.white),
                             onPressed: () {},
                           ),
-                          const SizedBox(width: 8,)
+                          const SizedBox(
+                            width: 8,
+                          )
                         ],
                       ),
                     )

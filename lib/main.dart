@@ -31,6 +31,7 @@ class MainPage extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         body: Container(
+          color: Colors.black,
             alignment: Alignment.center,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -38,20 +39,20 @@ class MainPage extends StatelessWidget {
                 ImageButton(
                     radius: 14.0,
                     size: 300,
-                    asset: "assets/images/peaky-blinders.jpg",
+                    asset: "assets/images/series.jpg",
                     title: "СЕРИАЛЫ",
                     func: () {}),
                 ImageButton(
                     radius: 14.0,
                     size: 300,
-                    asset: "assets/images/marci.jpg",
+                    asset: "assets/images/movies.jpg",
                     title: "ФИЛЬМЫ",
                     func: () {})
               ],
             )),
         appBar: AppBar(
-          backgroundColor: Colors.redAccent,
-          title: Text("Shower"),
+          backgroundColor: Colors.black87,
+          title: Text("Shower", style: TextStyle(fontFamily: 'Helvetica'),),
           actions: [
             IconButton(icon: Icon(Icons.account_circle_sharp), onPressed: (){},)
           ],
@@ -85,13 +86,13 @@ class ImageButton extends StatelessWidget {
           child: Stack(
             children: [
               Image.asset(asset),
-              Align(alignment: Alignment.center, child: Opacity(opacity: 0.5 ,child: Text(
+              Container(padding: EdgeInsets.only(top: 5, right: 2.5), alignment: Alignment.topRight, child: Opacity(opacity: 0.5 ,child: Text(
                 title,
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
-                    fontSize: 20,
+                    fontSize: 12,
                     background: Paint()
-                      ..strokeWidth = 25.0
+                      ..strokeWidth = 17.0
                       ..color = Colors.white
                       ..style = PaintingStyle.stroke
                       ..strokeJoin = StrokeJoin.round),
@@ -101,7 +102,7 @@ class ImageButton extends StatelessWidget {
       iconSize: size,
       onPressed: () {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return MoviePage();
+          return SearchPage();
         }));
       },
     );
