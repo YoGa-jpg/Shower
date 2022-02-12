@@ -26,12 +26,17 @@ class AppRoutes extends StatelessWidget {
 class MainPage extends StatelessWidget {
   const MainPage({Key? key}) : super(key: key);
 
+  void Handler()
+  {
+    print('Handler');
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         body: Container(
-          color: Colors.black,
+            color: Colors.black,
             alignment: Alignment.center,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -52,13 +57,42 @@ class MainPage extends StatelessWidget {
             )),
         appBar: AppBar(
           backgroundColor: Colors.black87,
-          title: Text("Shower", style: TextStyle(fontFamily: 'Helvetica'),),
-          actions: [
-            IconButton(icon: Icon(Icons.account_circle_sharp), onPressed: (){},)
-          ],
+          title: Text(
+            "Shower",
+            style: TextStyle(fontFamily: 'Helvetica'),
+          ),
+          automaticallyImplyLeading: true,
+        ),
+        drawer: Drawer(
+          backgroundColor: Colors.black,
+          child: ListView(
+            children: <Widget>[
+              DrawerHeader(
+                child: Image.asset('assets/images/archive.jpg', fit: BoxFit.fill)
+              ),
+              ListTile(
+                title: TextButton(child: Row(children: const [
+                  Text('Топ фильмов', style: TextStyle(color: Colors.white)),
+                  Expanded(child: Align(alignment: Alignment.centerRight, child: Icon(Icons.north_rounded, color: Colors.white),))
+                ],), onPressed: Handler)
+              ),
+              ListTile(
+                  title: TextButton(child: Row(children: const [
+                    Text('Избранное', style: TextStyle(color: Colors.white)),
+                    Expanded(child: Align(alignment: Alignment.centerRight, child: Icon(Icons.star, color: Colors.white),))
+                  ],), onPressed: Handler)
+              ),
+              ListTile(
+                  title: TextButton(child: Row(children: const [
+                    Text('История', style: TextStyle(color: Colors.white)),
+                    Expanded(child: Align(alignment: Alignment.centerRight, child: Icon(Icons.history, color: Colors.white),))
+                  ],), onPressed: Handler)
+              )
+            ],
           ),
         ),
-      );
+      ),
+    );
   }
 }
 
@@ -74,7 +108,7 @@ class ImageButton extends StatelessWidget {
       required this.radius,
       required this.size,
       required this.asset,
-        required this.title,
+      required this.title,
       required this.func})
       : super(key: key);
 
@@ -86,17 +120,22 @@ class ImageButton extends StatelessWidget {
           child: Stack(
             children: [
               Image.asset(asset),
-              Container(padding: EdgeInsets.only(top: 5, right: 2.5), alignment: Alignment.topRight, child: Opacity(opacity: 0.5 ,child: Text(
-                title,
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                    background: Paint()
-                      ..strokeWidth = 17.0
-                      ..color = Colors.white
-                      ..style = PaintingStyle.stroke
-                      ..strokeJoin = StrokeJoin.round),
-              )))
+              Container(
+                  padding: EdgeInsets.only(top: 5, right: 2.5),
+                  alignment: Alignment.topRight,
+                  child: Opacity(
+                      opacity: 0.5,
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                            background: Paint()
+                              ..strokeWidth = 17.0
+                              ..color = Colors.white
+                              ..style = PaintingStyle.stroke
+                              ..strokeJoin = StrokeJoin.round),
+                      )))
             ],
           )),
       iconSize: size,
