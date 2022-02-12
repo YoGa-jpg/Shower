@@ -9,6 +9,8 @@ import 'package:html/dom_parsing.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:shower/movie.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SearchPage extends StatelessWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -148,6 +150,10 @@ class MovieCard extends StatelessWidget {
       required this.film})
       : super(key: key);
 
+  void launchURL(String url) async {
+    if (!await launch('http://seasonvar.ru$url')) throw 'Could not launch $url';
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -191,7 +197,9 @@ class MovieCard extends StatelessWidget {
                             child: const Text("СМОТРЕТЬ"),
                             style: TextButton.styleFrom(
                                 primary: Colors.white),
-                            onPressed: () {},
+                            onPressed: () {
+                              launchURL(film);
+                            },
                           ),
                           const SizedBox(
                             width: 8,
